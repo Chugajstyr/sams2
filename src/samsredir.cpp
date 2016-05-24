@@ -217,7 +217,7 @@ int main (int argc, char *argv[])
 //  Logger::addLog(Logger::LK_DAEMON, mess.str());
 
 
-  char line[2048];
+  char line[65535];
   vector < string > fields;
   vector < string > source;
   string destination;
@@ -241,7 +241,7 @@ int main (int argc, char *argv[])
         {
           INFO ("Reason: Invalid fields count: " << fields.size());
           INFO ("Output: " << line);
-          cout << line << endl << flush;
+          cout << "ERR" << endl << flush;
           continue;
         }
 
@@ -252,7 +252,7 @@ int main (int argc, char *argv[])
         {
           INFO ("Reason: Url is local");
           INFO ("Output: " << line);
-	  cout << line << endl << flush;
+	  cout << "OK" << endl << flush;
           continue;
         }
 
@@ -265,14 +265,12 @@ int main (int argc, char *argv[])
           if (fields[2] != "-")
             {
               INFO ("Output: " << Proxy::getDenyAddr () << "/blocked.php?action=usernotfound&id=" << fields[2] << " " << fields[1] << " " << fields[2] << " " << fields[3]);
-              cout << Proxy::getDenyAddr () << "/blocked.php?action=usernotfound&id=" << fields[2];
-              cout << " " << fields[1] << " " << fields[2] << " " << fields[3] << endl << flush;
+              cout << "OK url=\"" << Proxy::getDenyAddr () << "/blocked.php?action=usernotfound&id=" << fields[2] << "\"" << endl << flush;
             }
           else
             {
               INFO ("Output: " << Proxy::getDenyAddr () << "/blocked.php?action=usernotfound&id=" << source[0] << " " << fields[1] << " " << fields[2] << " " << fields[3]);
-              cout << Proxy::getDenyAddr () << "/blocked.php?action=usernotfound&id=" << source[0];
-              cout << " " << fields[1] << " " << fields[2] << " " << fields[3] << endl << flush;
+              cout << "OK url=\"" << Proxy::getDenyAddr () << "/blocked.php?action=usernotfound&id=" << source[0] << "\"" << endl << flush;
             }
           continue;
         }
@@ -283,8 +281,7 @@ int main (int argc, char *argv[])
         {
           INFO ("Reason: User not active (disabled or blocked)");
           INFO ("Output: " << Proxy::getDenyAddr () << "/blocked.php?action=userdisabled&id=" << *usr << " " << fields[1] << " " << fields[2] << " " << fields[3]);
-          cout << Proxy::getDenyAddr () << "/blocked.php?action=userdisabled&id=" << *usr;
-          cout << " " << fields[1] << " " << fields[2] << " " << fields[3] << endl << flush;
+          cout << "OK url=\"" << Proxy::getDenyAddr () << "/blocked.php?action=userdisabled&id=" << *usr << "\"" << endl << flush;
           continue;
         }
 
@@ -294,8 +291,7 @@ int main (int argc, char *argv[])
         {
           INFO ("Reason: User's template not found");
           INFO ("Output: " << Proxy::getDenyAddr () << "/blocked.php?action=templatenotfound&id=" << *usr << " " << fields[1] << " " << fields[2] << " " << fields[3]);
-          cout << Proxy::getDenyAddr () << "/blocked.php?action=templatenotfound&id=" << *usr;
-          cout << " " << fields[1] << " " << fields[2] << " " << fields[3] << endl << flush;
+          cout << "OK url=\"" << Proxy::getDenyAddr () << "/blocked.php?action=templatenotfound&id=" << *usr << "\"" << endl << flush;
           continue;
         }
 
@@ -304,7 +300,7 @@ int main (int argc, char *argv[])
         {
           INFO ("Reason: In white list");
           INFO ("Output: " << line);
-	  cout << line << endl << flush;
+	  cout << "OK" << endl << flush;
           continue;
         }
 
@@ -313,8 +309,7 @@ int main (int argc, char *argv[])
         {
           INFO ("Reason: In black list");
           INFO ("Output: " << Proxy::getDenyAddr () << "/blocked.php?action=urldenied&id=" << *usr << " " << fields[1] << " " << fields[2] << " " << fields[3]);
-          cout << Proxy::getDenyAddr () << "/blocked.php?action=urldenied&id=" << *usr;
-          cout << " " << fields[1] << " " << fields[2] << " " << fields[3] << endl << flush;
+          cout << "OK url=\"" << Proxy::getDenyAddr () << "/blocked.php?action=urldenied&id=" << *usr << "\"" << endl << flush;
           continue;
         }
 
@@ -323,8 +318,7 @@ int main (int argc, char *argv[])
         {
           INFO ("Reason: In regular expression list");
           INFO ("Output: " << Proxy::getDenyAddr () << "/blocked.php?action=urldenied&id=" << *usr << " " << fields[1] << " " << fields[2] << " " << fields[3]);
-          cout << Proxy::getDenyAddr () << "/blocked.php?action=urldenied&id=" << *usr;
-          cout << " " << fields[1] << " " << fields[2] << " " << fields[3] << endl << flush;
+          cout << "OK url=\"" << Proxy::getDenyAddr () << "/blocked.php?action=urldenied&id=" << *usr << "\"" << endl << flush;
           continue;
         }
 
@@ -333,8 +327,7 @@ int main (int argc, char *argv[])
         {
           INFO ("Reason: Has disallowed file extension");
           INFO ("Output: " << Proxy::getDenyAddr () << "/blocked.php?action=urldenied&id=" << *usr << " " << fields[1] << " " << fields[2] << " " << fields[3]);
-          cout << Proxy::getDenyAddr () << "/blocked.php?action=urldenied&id=" << *usr;
-          cout << " " << fields[1] << " " << fields[2] << " " << fields[3] << endl << flush;
+          cout << "OK url=\"" << Proxy::getDenyAddr () << "/blocked.php?action=urldenied&id=" << *usr << "\"" << endl << flush;
           continue;
         }
 
@@ -343,8 +336,7 @@ int main (int argc, char *argv[])
         {
           INFO ("Reason: Denied due to time restrictions");
           INFO ("Output: " << Proxy::getDenyAddr () << "/blocked.php?action=timedenied&id=" << *usr << " " << fields[1] << " " << fields[2] << " " << fields[3]);
-          cout << Proxy::getDenyAddr () << "/blocked.php?action=timedenied&id=" << *usr;
-          cout << " " << fields[1] << " " << fields[2] << " " << fields[3] << endl << flush;
+          cout << "OK url=\"" << Proxy::getDenyAddr () << "/blocked.php?action=timedenied&id=" << *usr << "\"" << endl << flush;
           continue;
         }
 
@@ -352,8 +344,7 @@ int main (int argc, char *argv[])
         {
           INFO ("Reason: Denied to all and not whitelisted");
           INFO ("Output: " << Proxy::getDenyAddr () << "/blocked.php?action=urldenied&id=" << *usr << " " << fields[1] << " " << fields[2] << " " << fields[3]);
-          cout << Proxy::getDenyAddr () << "/blocked.php?action=urldenied&id=" << *usr;
-          cout << " " << fields[1] << " " << fields[2] << " " << fields[3] << endl << flush;
+          cout << "OK url=\"" << Proxy::getDenyAddr () << "/blocked.php?action=urldenied&id=" << *usr << "\"" << endl << flush;
           continue;
         }
 
@@ -362,15 +353,14 @@ int main (int argc, char *argv[])
         {
           INFO ("Reason: Redirected to another location");
           INFO ("Output: " << destination << " " << fields[1] << " " << fields[2] << " " << fields[3]);
-          cout << destination;
-          cout << " " << fields[1] << " " << fields[2] << " " << fields[3] << endl << flush;
+          cout << "OK url=\"" << destination << "\"" << endl << flush;
           continue;
         }
 
       // Все проверки пройдены успешно, разрешаем доступ
       INFO ("Reason: Access granted");
       INFO ("Output: " << line);
-      cout << line << endl << flush;
+      cout << "OK" << endl << flush;
     }
 
   delete conn;
