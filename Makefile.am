@@ -27,7 +27,15 @@ install-data-local:
 	    $(install_sh) -c -m 644 $(top_srcdir)/etc/doc_sams2_conf $(DESTDIR)/$(HTTPD_INCLUDE)/doc4sams2.conf ;\
 	    sed -i -e 's,__DOCPREFIX,$(docdir),g' $(DESTDIR)/$(HTTPD_INCLUDE)/doc4sams2.conf ;\
 	fi
-
+	if [ ! -d /etc/squid3 ] ; then \
+	    sed -i -e 's/SQUIDROOTDIR=\/etc\/squid3/SQUIDROOTDIR=\/etc\/squid/g' $(DESTDIR)/$(sysconfdir)/sams2.conf ;\
+	fi
+	if [ ! -d /var/log/squid3 ] ; then \
+	    sed -i -e 's/SQUIDLOGDIR=\/var\/log\/squid3/SQUIDLOGDIR=\/var\/log\/squid/g' $(DESTDIR)/$(sysconfdir)/sams2.conf ;\
+	fi
+	if [ ! -d /var/spool/squid3 ] ; then \
+	    sed -i -e 's/SQUIDCACHEDIR=\/var\/spool\/squid3/SQUIDCACHEDIR=\/var\/spool\/squid/g' $(DESTDIR)/$(sysconfdir)/sams2.conf ;\
+	fi
 
 uninstall-local:
 	if [ -f $(DESTDIR)/$(sysconfdir)/sams2.conf ] ; then \
