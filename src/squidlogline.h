@@ -41,11 +41,13 @@ public:
   {
     CR_UNKNOWN,                 ///< Unrecognized Cache Result
     TCP_HIT,                    ///< A valid copy of the requested object was in the cache
+    TCP_HIT_ABORTED,
 
     /** A valid copy of the requested object was in the cache,
     *  AND it was in memory so it did not have to be read from disk
     */
     TCP_MEM_HIT,
+    TCP_MEM_HIT_ABORTED,       ///< *_ABORTED means the client TCP connection got closed on Squid, probably by the client browser.
 
     /** The request was for a negatively-cached object.
     *  Negative-caching refers to caching certain types of errors,
@@ -53,7 +55,9 @@ public:
     *  is controlled with the negative_ttl configuration parameter.
     */
     TCP_NEGATIVE_HIT,
+
     TCP_MISS,                   ///< The requested object was not in the cache
+    TCP_MISS_ABORTED,
 
     /** The object was in the cache, but STALE. An If-Modified-Since request
     *  was made and a "304 Not Modified" reply was received.
@@ -66,20 +70,24 @@ public:
     * failed, so the old (stale) object was returned.
     */
     TCP_REF_FAIL_HIT,
+    TCP_REFRESH_FAIL_HIT,
 
     /** The object was in the cache, but STALE. An If-Modified-Since request was made
     *  and the reply contained new content.
     */
     TCP_REFRESH_MISS,
     TCP_CLIENT_REFRESH,         ///< The client issued a request with the "no-cache" pragma
-
     TCP_CLIENT_REFRESH_MISS,
+    TCP_ASYNC_HIT,
 
     TCP_IMS_HIT,                ///< The client issued an If-Modified-Since request and the object was in the cache and still fresh
     TCP_IMS_MISS,               ///< The client issued an If-Modified-Since request for a stale object
     TCP_SWAPFAIL,               ///< The object was believed to be in the cache, but could not be accessed
     TCP_SWAPFAIL_MISS,          ///<
+    TCP_REDIRECT,
     TCP_DENIED,                 ///< Access was denied for this request
+    TCP_DENIED_ABORTED,
+    TCP_TUNNEL,
     UDP_HIT,                    ///< A valid copy of the requested object was in the cache
     UDP_HIT_OBJ,                ///< Same as UDP_HIT
     UDP_MISS,                   ///< The requested object was not in the cache
@@ -89,7 +97,14 @@ public:
     ERR_CLIENT_ABORT,           ///< The client aborted its request
     ERR_NO_CLIENTS,             ///< There are no clients requesting this URL any more
     ERR_READ_ERROR,             ///< There was a read(2) error while retrieving this object
-    ERR_CONNECT_FAIL            ///< Squid failed to connect to the server for this request
+    ERR_CONNECT_FAIL,           ///< Squid failed to connect to the server for this request
+
+    /** Spliced connection. No HTTP handling occured.
+    *   The TAG_* is a representation of what Squid has done in processing the transaction.
+    */
+    TAG_NONE_ABORTED,
+    TAG_NONE
+
   };
 
   /**

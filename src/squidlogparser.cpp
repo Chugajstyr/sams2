@@ -445,19 +445,26 @@ void SquidLogParser::parseFile (DBConn *conn, const string & fname, bool from_be
           ERROR ("Unknown cache result");
           break;
         case SquidLogLine::TCP_DENIED:
+        case SquidLogLine::TCP_DENIED_ABORTED:
         case SquidLogLine::UDP_DENIED:
+        case SquidLogLine::TCP_REDIRECT:
           break;
         case SquidLogLine::TCP_HIT:
+        case SquidLogLine::TCP_HIT_ABORTED:
         case SquidLogLine::TCP_MEM_HIT:
+        case SquidLogLine::TCP_MEM_HIT_ABORTED:
         case SquidLogLine::TCP_REFRESH_HIT:
+        case SquidLogLine::TCP_REFRESH_FAIL_HIT:
         case SquidLogLine::TCP_REFRESH_UNMODIFIED:
         case SquidLogLine::TCP_REF_FAIL_HIT:
         case SquidLogLine::TCP_IMS_HIT:
+        case SquidLogLine::TCP_ASYNC_HIT:
         case SquidLogLine::UDP_HIT:
           s_hit = sll.getSize ();
           usr->addHit (s_hit);
         case SquidLogLine::TCP_NEGATIVE_HIT:
         case SquidLogLine::TCP_MISS:
+        case SquidLogLine::TCP_MISS_ABORTED:
         case SquidLogLine::TCP_REFRESH_MISS:
         case SquidLogLine::TCP_REFRESH_MODIFIED:
         case SquidLogLine::TCP_CLIENT_REFRESH:
@@ -465,6 +472,7 @@ void SquidLogParser::parseFile (DBConn *conn, const string & fname, bool from_be
         case SquidLogLine::TCP_IMS_MISS:
         case SquidLogLine::TCP_SWAPFAIL:
         case SquidLogLine::TCP_SWAPFAIL_MISS:
+        case SquidLogLine::TCP_TUNNEL:
         case SquidLogLine::UDP_HIT_OBJ:
         case SquidLogLine::UDP_MISS:
         case SquidLogLine::UDP_INVALID:
@@ -473,6 +481,8 @@ void SquidLogParser::parseFile (DBConn *conn, const string & fname, bool from_be
         case SquidLogLine::ERR_NO_CLIENTS:
         case SquidLogLine::ERR_READ_ERROR:
         case SquidLogLine::ERR_CONNECT_FAIL:
+        case SquidLogLine::TAG_NONE:
+        case SquidLogLine::TAG_NONE_ABORTED:
           s_size = sll.getSize ();
           usr->addSize (s_size);
           break;
