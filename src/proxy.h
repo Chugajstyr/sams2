@@ -35,7 +35,11 @@ public:
   /**
    * @brief Тип учитываемого трафика
    */
+#if defined(__LP64__)
+  enum TrafficType: long
+#else
   enum TrafficType
+#endif
   {
     TRAF_REAL,                  ///< Реально полученный (не учитывая кэш)
     TRAF_FULL                   ///< Полный трафик (включая кэш)
@@ -51,7 +55,11 @@ public:
   /**
    * @brief Способ авторизации пользователя
    */
+#if defined(__LP64__)
+  enum usrAuthType: long
+#else
   enum usrAuthType
+#endif
   {
     AUTH_NONE,                  ///< Не используется
     AUTH_IP,                    ///< Авторизация по сетевому (IP) адресу
@@ -84,7 +92,11 @@ public:
    * используется только для определения нужно ли вносить списки доступа и
    * ограничения в файл squid.conf
    */
+#if defined(__LP64__)
+  enum RedirType: long
+#else
   enum RedirType
+#endif
   {
     REDIR_NONE,                 ///< Не используется встроенный (sams) редиректор
     REDIR_INTERNAL,             ///< Используется встроенный (sams) редиректор
@@ -101,7 +113,11 @@ public:
   /**
    * @brief Способ обработки лог файла squid
    */
+#if defined(__LP64__)
+  enum ParserType: long
+#else
   enum ParserType
+#endif
   {
     PARSE_NONE,                 ///< Не обрабатывать
     PARSE_DISCRET,              ///< Обрабатывать через N минут
@@ -111,7 +127,11 @@ public:
   /**
    * @brief Регистр букв
    */
+#if defined(__LP64__)
+  enum CharCase: long
+#else
   enum CharCase
+#endif
   {
     CASE_UPPER,                 ///< Заглавные буквы
     CASE_LOWER,                 ///< Строчные буквы
