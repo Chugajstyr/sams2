@@ -1,3 +1,6 @@
 etc/sams2.conf etc
-src/sams2daemon src/samsparser src/sams2redir usr/bin
+usr/bin/sams2daemon usr/bin/samsparser usr/bin/sams2redir usr/bin
+#usr/bin/sams_send_email usr/bin
+#usr/lib/$(DEB_HOST_MULTIARCH)/sams2/lib*.so* usr/lib/$(DEB_HOST_MULTIARCH)/sams2
+usr/lib/*/sams2/lib*.so*
 #mysql usr/share/sams2

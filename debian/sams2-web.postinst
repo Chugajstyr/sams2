@@ -1,5 +1,5 @@
 #!/bin/sh
-# postinst script for sams2
+# postinst script for sams2-web
 #
 # see: dh_installdeb(1)
 
@@ -20,6 +20,9 @@ set -e
 
 case "$1" in
     configure)
+	chmod 777 /usr/share/sams2/data
+	a2ensite -q sams2-web
+	service apache2 reload
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
