@@ -88,6 +88,7 @@ function get_permissions($str, $mode, $comment, $lang)
 		fwrite( $fout, "test");
 		fclose($fout);
 		echo "<TD WIDTH=50%><font color=GREEN> $setup_26</font>";
+		unlink($str);
 		return(1);
 	}
 	echo "<TD WIDTH=50%><font color=red> $setup_27</font>";

@@ -19,10 +19,41 @@ install-data-local:
 	if [ ! -f $(DESTDIR)/$(sysconfdir)/sams2.conf ] ; then \
 	    $(install_sh) -c -m 644 $(top_srcdir)/etc/sams2.conf $(DESTDIR)/$(sysconfdir) ;\
 	fi
-	if [ ! -f $(DESTDIR)/$(HTTPD_INCLUDE)/sams2.conf ] ; then \
-	    $(install_sh) -c -m 644 $(top_srcdir)/etc/httpd_conf $(DESTDIR)/$(HTTPD_INCLUDE)/sams2.conf ;\
-	    sed -i -e 's,__WEBPREFIX,$(datadir)/sams2,g' $(DESTDIR)/$(HTTPD_INCLUDE)/sams2.conf ;\
+	echo "httpd_server=$(httpd_server)"
+	$(httpd_server) -v
+	echo "debian=$(debian)"
+	echo "==> find datadir=$(datadir) destdir=$(DESTDIR) httpd_include=$(HTTPD_INCLUDE) conf=/sams2.conf HTTPD_ROOT=$(HTTPD_ROOT) httpd_root=$(httpd_root)"
+	if [ "$(DESTDIR)" = "" ] ; then \
+	    if [ ! -f $(HTTPD_INCLUDE)/sams2.conf ] ; then \
+		if $(httpd_server) -v | grep "/2.4" &>/dev/null ; then \
+		    $(install_sh) -c -m 644 $(top_srcdir)/etc/httpd2.4_conf $(HTTPD_INCLUDE)/sams2.conf ;\
+		    sed -i -e 's,__WEBPREFIX,$(datadir)/sams2,g' $(HTTPD_INCLUDE)/sams2.conf ;\
+		    echo "copy httpd2.4_conf ==> $(HTTPD_INCLUDE)/sams2.conf" ; \
+		else \
+		    $(install_sh) -c -m 644 $(top_srcdir)/etc/httpd_conf $(HTTPD_INCLUDE)/sams2.conf ;\
+		    sed -i -e 's,__WEBPREFIX,$(datadir)/sams2,g' $(HTTPD_INCLUDE)/sams2.conf ;\
+		    echo "copy httpd_conf ==> $(HTTPD_INCLUDE)/sams2.conf" ; \
+		fi ; \
+		if test -d $(HTTPD_ROOT)/sites-enabled ; then ln -s $(HTTPD_INCLUDE)/sams2.conf $(HTTPD_ROOT)/sites-enabled/sams2.conf ; fi ; \
+	    fi ; \
+	else \
+	    if [ ! -f $(DESTDIR)/$(HTTPD_INCLUDE)/sams2.conf ] ; then \
+		if $(httpd_server) -v | grep "/2.4" &>/dev/null ; then \
+		    $(install_sh) -c -m 644 $(top_srcdir)/etc/httpd2.4_conf $(DESTDIR)/$(HTTPD_INCLUDE)/sams2.conf ;\
+		    sed -i -e 's,__WEBPREFIX,$(datadir)/sams2,g' $(DESTDIR)/$(HTTPD_INCLUDE)/sams2.conf ;\
+		    echo "copy httpd2.4_conf ==> $(DESTDIR)/$(HTTPD_INCLUDE)/sams2.conf" ; \
+		else \
+		    $(install_sh) -c -m 644 $(top_srcdir)/etc/httpd_conf $(DESTDIR)/$(HTTPD_INCLUDE)/sams2.conf ;\
+		    sed -i -e 's,__WEBPREFIX,$(datadir)/sams2,g' $(DESTDIR)/$(HTTPD_INCLUDE)/sams2.conf ;\
+		    echo "copy httpd_conf ==> $(DESTDIR)/$(HTTPD_INCLUDE)/sams2.conf" ; \
+		fi ; \
+		if test -d $(DESTDIR)/$(HTTPD_ROOT)/sites-enabled ; then ln -s $(DESTDIR)/$(HTTPD_INCLUDE)/sams2.conf $(DESTDIR)/$(HTTPD_ROOT)/sites-enabled/sams2.conf ; fi ; \
+	    fi ; \
 	fi
+#	if [ ! -f $(DESTDIR)/$(HTTPD_INCLUDE)/sams2.conf ] ; then \
+#	    $(install_sh) -c -m 644 $(top_srcdir)/etc/httpd_conf $(DESTDIR)/$(HTTPD_INCLUDE)/sams2.conf ;\
+#	    sed -i -e 's,__WEBPREFIX,$(datadir)/sams2,g' $(DESTDIR)/$(HTTPD_INCLUDE)/sams2.conf ;\
+#	fi
 	if [ ! -f $(DESTDIR)/$(HTTPD_INCLUDE)/doc4sams2.conf ] ; then \
 	    $(install_sh) -c -m 644 $(top_srcdir)/etc/doc_sams2_conf $(DESTDIR)/$(HTTPD_INCLUDE)/doc4sams2.conf ;\
 	    sed -i -e 's,__DOCPREFIX,$(docdir),g' $(DESTDIR)/$(HTTPD_INCLUDE)/doc4sams2.conf ;\

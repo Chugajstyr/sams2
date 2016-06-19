@@ -13,6 +13,8 @@
 %define is_Mandriva_2008 %(grep -qi  "mandriva.*2008" /etc/mandriva-release &>/dev/null && echo 1 || echo 0)
 %define is_Mandriva_2009 %(grep -qi  "mandriva.*2009" /etc/mandriva-release &>/dev/null && echo 1 || echo 0)
 %define is_Fedora %(rpm -q filesystem |grep -qiE "fc[0-9]" &>/dev/null && echo 1 || echo 0)
+%define is_RHEL6 %(rpm -q filesystem |grep "el6"&>/dev/null && echo 1 || echo 0)
+%define is_RHEL7 %(rpm -q filesystem |grep "el7"&>/dev/null && echo 1 || echo 0)
 %define is_CentOS %(rpm -q filesystem |grep -qi "centos"&>/dev/null && echo 1 || echo 0)
 #define is_RHEL %(grep -qi  "^red hat" /etc/redhat-release &>/dev/null && echo 1 || echo 0)
 
@@ -49,11 +51,19 @@
 %if %{is_CentOS}
 %define disttag .centos
 %endif
+%if %{is_RHEL6}
+%define dist rhel6
+%define disttag .el6
+%endif
+%if %{is_RHEL7}
+%define dist rhel7
+%define disttag .el7
+%endif
 
 
 Name:          sams2
-Version:       2.0.0
-Epoch:         667
+Version:       2.0.2
+Epoch:         1000
 #Release:       b2.%{epoch}%{disttag}
 Release:       %{disttag}
 Summary:       SAMS2 (Squid Account Management System)
@@ -80,6 +90,14 @@ BuildRequires: mysql-devel, postgresql-devel, unixODBC-devel, gcc-c++, pcre-deve
 %endif
 %if %{dist} == "redhat"
 Requires:      mysql-server, postgresql-server, unixODBC, pcre, squid
+BuildRequires: mysql-devel, postgresql-devel, unixODBC-devel, gcc-c++, pcre-devel, autoconf, automake, libtool
+%endif
+%if %{dist} == "rhel6"
+Requires:      mysql-server, postgresql-server, unixODBC, pcre, squid
+BuildRequires: mysql-devel, postgresql-devel, unixODBC-devel, gcc-c++, pcre-devel, autoconf, automake, libtool
+%endif
+%if %{dist} == "rhel7"
+Requires:      mariadb-server, postgresql-server, unixODBC, pcre, squid
 BuildRequires: mysql-devel, postgresql-devel, unixODBC-devel, gcc-c++, pcre-devel, autoconf, automake, libtool
 %endif
 %if %dist == "mandriva9"
