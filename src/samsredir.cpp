@@ -353,7 +353,10 @@ int main (int argc, char *argv[])
         {
           INFO ("Reason: Redirected to another location");
           INFO ("Output: " << destination << " " << fields[1] << " " << fields[2] << " " << fields[3]);
-          cout << "OK url=\"" << destination << "\"" << endl << flush;
+	   cout << "OK url=\"" << destination << "\"" << endl << flush;
+          /*
+	   cout << "OK rewrite-url=\"" << destination << "\"" << endl << flush;
+	   */
           continue;
         }
 

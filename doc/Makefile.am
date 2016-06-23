@@ -27,7 +27,12 @@ static_docs = \
 	timerange.html \
 	webinterface.html \
 	samsbackup.html \
-	accesslists.html
+	accesslists.html \
+	authorization.html \
+	importfromsams1.html \
+	syncwithntlm.html \
+	usergroups.html \
+	someproxy.html
 
 docdir = $(datadir)/doc/$(PACKAGE)-$(VERSION)
 
