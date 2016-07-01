@@ -1,4 +1,4 @@
-Added Debian lib path to DB macro files. It`s fixing libtool link error "line 6000: cd: no: No such file or directory".
+Added Debian lib path to DB macro files.
 --- a/m4/mysql.m4
 +++ b/m4/mysql.m4
 @@ -21,7 +21,8 @@

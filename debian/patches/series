@@ -1,2 +1,3 @@
+redirect_squid34.patch
 libtool_link.patch
 conf.patch
