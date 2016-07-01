@@ -1,0 +1,35 @@
+Added Debian lib path to DB macro files. It`s fixing libtool link error "line 6000: cd: no: No such file or directory".
+--- a/m4/mysql.m4
++++ b/m4/mysql.m4
+@@ -21,7 +21,8 @@
+ fi
+ 
+ if test "x$ac_mysql_libraries" = "x"; then
+-  ac_mysql_libraries="/usr/lib64/mysql /usr/local/mysql/lib/mysql /usr/local/lib/mysql /usr/lib/mysql /usr/local/lib /usr/lib"
++  ac_mysql_libraries="/usr/lib64/mysql /usr/local/mysql/lib/mysql /usr/local/lib/mysql /usr/lib/mysql /usr/local/lib /usr/lib \
++			/usr/lib/x86_64-linux-gnu /usr/lib/i386-linux-gnu"
+ fi
+ 
+ if test "$ac_use_mysql" = "no"; then
+--- a/m4/pq.m4
++++ b/m4/pq.m4
+@@ -21,7 +21,7 @@
+ fi
+ 
+ if test "x$ac_pq_libraries" = "x"; then
+-  ac_pq_libraries="/usr/local/lib /usr/lib64 /usr/lib"
++  ac_pq_libraries="/usr/local/lib /usr/lib64 /usr/lib /usr/lib/x86_64-linux-gnu /usr/lib/i386-linux-gnu"
+ fi
+ 
+ if test "$ac_use_pq" = "no"; then
+--- a/m4/unixodbc.m4
++++ b/m4/unixodbc.m4
+@@ -21,7 +21,7 @@
+ fi
+ 
+ if test x"$ac_unixodbc_libraries" = "x"; then
+-  ac_unixodbc_libraries="/usr/lib64 /usr/local/lib /usr/lib"
++  ac_unixodbc_libraries="/usr/lib64 /usr/local/lib /usr/lib /usr/lib/x86_64-linux-gnu /usr/lib/i386-linux-gnu"
+ fi
+ 
+ if test "$ac_use_unixodbc" = "no"; then
