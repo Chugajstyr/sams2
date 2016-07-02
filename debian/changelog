@@ -1,6 +1,6 @@
-sams2 (2.0.0-2~1.gbp0b0f73) UNRELEASED; urgency=medium
+sams2 (2.0.0-2~2.gbp7c1a5a) UNRELEASED; urgency=medium
 
-  ** SNAPSHOT build @0b0f7393d21ec36d8a5d188baf3d9613046d868d **
+  ** SNAPSHOT build @7c1a5a686b0f8029dde9b9d210e8b870bd9924f8 **
 
   [ blaze ]
   * Remove reference to sams.nixdev.net
@@ -14,6 +14,11 @@ sams2 (2.0.0-2~1.gbp0b0f73) UNRELEASED; urgency=medium
   * Добавлеа возмозжность очистки логов и данных о трафике из веб интерфейса
 
   [ Chugajstyr ]
+  * Patch, that add Debian lib path to DB macro files.
+  * Адаптация SAMS2 redirector для Squid 3.4
+  * Фикс "пустой" страницы setup.php
+  * Фикс "+++WARNING: Unknown cache result" в syslog
+  * Импорт исправлений из upstream v2.0.2
 
  -- Chugajstyr <notexist@gmail.com>  Thu, 30 Jun 2016 14:41:13 +0300
 

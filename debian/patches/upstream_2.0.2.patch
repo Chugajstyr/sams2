@@ -1,0 +1,237 @@
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -19,15 +19,54 @@
+ 	if [ ! -f $(DESTDIR)/$(sysconfdir)/sams2.conf ] ; then \
+ 	    $(install_sh) -c -m 644 $(top_srcdir)/etc/sams2.conf $(DESTDIR)/$(sysconfdir) ;\
+ 	fi
+-	if [ ! -f $(DESTDIR)/$(HTTPD_INCLUDE)/sams2.conf ] ; then \
+-	    $(install_sh) -c -m 644 $(top_srcdir)/etc/httpd_conf $(DESTDIR)/$(HTTPD_INCLUDE)/sams2.conf ;\
+-	    sed -i -e 's,__WEBPREFIX,$(datadir)/sams2,g' $(DESTDIR)/$(HTTPD_INCLUDE)/sams2.conf ;\
++	echo "httpd_server=$(httpd_server)"
++	$(httpd_server) -v
++	echo "debian=$(debian)"
++	echo "==> find datadir=$(datadir) destdir=$(DESTDIR) httpd_include=$(HTTPD_INCLUDE) conf=/sams2.conf HTTPD_ROOT=$(HTTPD_ROOT) httpd_root=$(httpd_root)"
++	if [ "$(DESTDIR)" = "" ] ; then \
++	    if [ ! -f $(HTTPD_INCLUDE)/sams2.conf ] ; then \
++		if $(httpd_server) -v | grep "/2.4" &>/dev/null ; then \
++		    $(install_sh) -c -m 644 $(top_srcdir)/etc/httpd2.4_conf $(HTTPD_INCLUDE)/sams2.conf ;\
++		    sed -i -e 's,__WEBPREFIX,$(datadir)/sams2,g' $(HTTPD_INCLUDE)/sams2.conf ;\
++		    echo "copy httpd2.4_conf ==> $(HTTPD_INCLUDE)/sams2.conf" ; \
++		else \
++		    $(install_sh) -c -m 644 $(top_srcdir)/etc/httpd_conf $(HTTPD_INCLUDE)/sams2.conf ;\
++		    sed -i -e 's,__WEBPREFIX,$(datadir)/sams2,g' $(HTTPD_INCLUDE)/sams2.conf ;\
++		    echo "copy httpd_conf ==> $(HTTPD_INCLUDE)/sams2.conf" ; \
++		fi ; \
++		if test -d $(HTTPD_ROOT)/sites-enabled ; then ln -s $(HTTPD_INCLUDE)/sams2.conf $(HTTPD_ROOT)/sites-enabled/sams2.conf ; fi ; \
++	    fi ; \
++	else \
++	    if [ ! -f $(DESTDIR)/$(HTTPD_INCLUDE)/sams2.conf ] ; then \
++		if $(httpd_server) -v | grep "/2.4" &>/dev/null ; then \
++		    $(install_sh) -c -m 644 $(top_srcdir)/etc/httpd2.4_conf $(DESTDIR)/$(HTTPD_INCLUDE)/sams2.conf ;\
++		    sed -i -e 's,__WEBPREFIX,$(datadir)/sams2,g' $(DESTDIR)/$(HTTPD_INCLUDE)/sams2.conf ;\
++		    echo "copy httpd2.4_conf ==> $(DESTDIR)/$(HTTPD_INCLUDE)/sams2.conf" ; \
++		else \
++		    $(install_sh) -c -m 644 $(top_srcdir)/etc/httpd_conf $(DESTDIR)/$(HTTPD_INCLUDE)/sams2.conf ;\
++		    sed -i -e 's,__WEBPREFIX,$(datadir)/sams2,g' $(DESTDIR)/$(HTTPD_INCLUDE)/sams2.conf ;\
++		    echo "copy httpd_conf ==> $(DESTDIR)/$(HTTPD_INCLUDE)/sams2.conf" ; \
++		fi ; \
++		if test -d $(DESTDIR)/$(HTTPD_ROOT)/sites-enabled ; then ln -s $(DESTDIR)/$(HTTPD_INCLUDE)/sams2.conf $(DESTDIR)/$(HTTPD_ROOT)/sites-enabled/sams2.conf ; fi ; \
++	    fi ; \
+ 	fi
++#	if [ ! -f $(DESTDIR)/$(HTTPD_INCLUDE)/sams2.conf ] ; then \
++#	    $(install_sh) -c -m 644 $(top_srcdir)/etc/httpd_conf $(DESTDIR)/$(HTTPD_INCLUDE)/sams2.conf ;\
++#	    sed -i -e 's,__WEBPREFIX,$(datadir)/sams2,g' $(DESTDIR)/$(HTTPD_INCLUDE)/sams2.conf ;\
++#	fi
+ 	if [ ! -f $(DESTDIR)/$(HTTPD_INCLUDE)/doc4sams2.conf ] ; then \
+ 	    $(install_sh) -c -m 644 $(top_srcdir)/etc/doc_sams2_conf $(DESTDIR)/$(HTTPD_INCLUDE)/doc4sams2.conf ;\
+ 	    sed -i -e 's,__DOCPREFIX,$(docdir),g' $(DESTDIR)/$(HTTPD_INCLUDE)/doc4sams2.conf ;\
+ 	fi
+-
++	if [ ! -d /etc/squid3 ] ; then \
++	    sed -i -e 's/SQUIDROOTDIR=\/etc\/squid3/SQUIDROOTDIR=\/etc\/squid/g' $(DESTDIR)/$(sysconfdir)/sams2.conf ;\
++	fi
++	if [ ! -d /var/log/squid3 ] ; then \
++	    sed -i -e 's/SQUIDLOGDIR=\/var\/log\/squid3/SQUIDLOGDIR=\/var\/log\/squid/g' $(DESTDIR)/$(sysconfdir)/sams2.conf ;\
++	fi
++	if [ ! -d /var/spool/squid3 ] ; then \
++	    sed -i -e 's/SQUIDCACHEDIR=\/var\/spool\/squid3/SQUIDCACHEDIR=\/var\/spool\/squid/g' $(DESTDIR)/$(sysconfdir)/sams2.conf ;\
++	fi
+ 
+ uninstall-local:
+ 	if [ -f $(DESTDIR)/$(sysconfdir)/sams2.conf ] ; then \
+--- a/configure.in
++++ b/configure.in
+@@ -99,6 +99,13 @@
+ eval HTTPD_ROOT=$HTTPD_ROOT
+ eval SERVER_CONFIG_FILE=$SERVER_CONFIG_FILE
+ eval HTTPD_INCLUDE=$HTTPD_INCLUDE
++if test -f /etc/debian_version  ; then eval distr="debian" ; else eval distr="other" ; fi
++if test -f /etc/debian_version  ; then eval apache24=`apache2 -v | grep "/2.4" &>/dev/null && echo 1 || echo 0 &` ; else eval apache24=`httpd -v | grep "/2.4" &>/dev/null && echo 1 || echo 0 &` ; fi
++
++#echo "HTTPD_ROOT:        $HTTPD_ROOT"
++#echo "SERVER_CONFIG_FILE: $SERVER_CONFIG_FILE"
++#echo "HTTPD_INCLUDE:      $HTTPD_INCLUDE"
++#echo "debian              $debian"
+ 
+ echo ""
+ echo "Use MySQL API:      $use_mysql_dev"
+--- a/etc/sams2.conf
++++ b/etc/sams2.conf
+@@ -30,9 +30,9 @@
+ DB_PASSWORD=
+ 
+ SQUIDCACHEFILE=access.log
+-SQUIDROOTDIR=/etc/squid
+-SQUIDLOGDIR=/var/log/squid
+-SQUIDCACHEDIR=/usr/local/apache2
++SQUIDROOTDIR=/etc/squid3
++SQUIDLOGDIR=/var/log/squid3
++SQUIDCACHEDIR=/var/spool/squid3
+ 
+ WBINFOPATH=/usr/local
+ SAMSPATH=/usr/local
+--- a/php/Makefile.am
++++ b/php/Makefile.am
+@@ -24,6 +24,7 @@
+ 	done
+ 	sed -i -e 's,__VERSION,$(VERSION),g' $(DESTDIR)/$(datadir)/$(distdir)/dbclass.php
+ 	sed -i -e 's,/etc/sams2.conf,${sysconfdir}/sams2.conf,g' $(DESTDIR)/$(datadir)/$(distdir)/config.php
++	if ! test -d $(DESTDIR)/$(datadir)/$(distdir)/data ; then mkdir $(DESTDIR)/$(datadir)/$(distdir)/data ; fi
+ 	chmod 0777 $(DESTDIR)/$(datadir)/$(distdir)/data
+ 
+ uninstall-local:
+--- a/php/setup.php
++++ b/php/setup.php
+@@ -88,6 +88,7 @@
+ 		fwrite( $fout, "test");
+ 		fclose($fout);
+ 		echo "<TD WIDTH=50%><font color=GREEN> $setup_26</font>";
++		unlink($str);
+ 		return(1);
+ 	}
+ 	echo "<TD WIDTH=50%><font color=red> $setup_27</font>";
+--- a/spec/sams2.spec
++++ b/spec/sams2.spec
+@@ -13,6 +13,8 @@
+ %define is_Mandriva_2008 %(grep -qi  "mandriva.*2008" /etc/mandriva-release &>/dev/null && echo 1 || echo 0)
+ %define is_Mandriva_2009 %(grep -qi  "mandriva.*2009" /etc/mandriva-release &>/dev/null && echo 1 || echo 0)
+ %define is_Fedora %(rpm -q filesystem |grep -qiE "fc[0-9]" &>/dev/null && echo 1 || echo 0)
++%define is_RHEL6 %(rpm -q filesystem |grep "el6"&>/dev/null && echo 1 || echo 0)
++%define is_RHEL7 %(rpm -q filesystem |grep "el7"&>/dev/null && echo 1 || echo 0)
+ %define is_CentOS %(rpm -q filesystem |grep -qi "centos"&>/dev/null && echo 1 || echo 0)
+ #define is_RHEL %(grep -qi  "^red hat" /etc/redhat-release &>/dev/null && echo 1 || echo 0)
+ 
+@@ -49,11 +51,19 @@
+ %if %{is_CentOS}
+ %define disttag .centos
+ %endif
++%if %{is_RHEL6}
++%define dist rhel6
++%define disttag .el6
++%endif
++%if %{is_RHEL7}
++%define dist rhel7
++%define disttag .el7
++%endif
+ 
+ 
+ Name:          sams2
+-Version:       2.0.0
+-Epoch:         667
++Version:       2.0.2
++Epoch:         1000
+ #Release:       b2.%{epoch}%{disttag}
+ Release:       %{disttag}
+ Summary:       SAMS2 (Squid Account Management System)
+@@ -82,6 +92,14 @@
+ Requires:      mysql-server, postgresql-server, unixODBC, pcre, squid
+ BuildRequires: mysql-devel, postgresql-devel, unixODBC-devel, gcc-c++, pcre-devel, autoconf, automake, libtool
+ %endif
++%if %{dist} == "rhel6"
++Requires:      mysql-server, postgresql-server, unixODBC, pcre, squid
++BuildRequires: mysql-devel, postgresql-devel, unixODBC-devel, gcc-c++, pcre-devel, autoconf, automake, libtool
++%endif
++%if %{dist} == "rhel7"
++Requires:      mariadb-server, postgresql-server, unixODBC, pcre, squid
++BuildRequires: mysql-devel, postgresql-devel, unixODBC-devel, gcc-c++, pcre-devel, autoconf, automake, libtool
++%endif
+ %if %dist == "mandriva9"
+ Requires:      mysql-common, libpcre, squid
+ BuildRequires: mysql-devel, gcc-c++, libpcre-devel, autoconf, automake, libtool
+--- a/src/proxy.h
++++ b/src/proxy.h
+@@ -35,7 +35,11 @@
+   /**
+    * @brief Тип учитываемого трафика
+    */
++#if defined(__LP64__)
++  enum TrafficType: long
++#else
+   enum TrafficType
++#endif
+   {
+     TRAF_REAL,                  ///< Реально полученный (не учитывая кэш)
+     TRAF_FULL                   ///< Полный трафик (включая кэш)
+@@ -51,7 +55,11 @@
+   /**
+    * @brief Способ авторизации пользователя
+    */
++#if defined(__LP64__)
++  enum usrAuthType: long
++#else
+   enum usrAuthType
++#endif
+   {
+     AUTH_NONE,                  ///< Не используется
+     AUTH_IP,                    ///< Авторизация по сетевому (IP) адресу
+@@ -84,7 +92,11 @@
+    * используется только для определения нужно ли вносить списки доступа и
+    * ограничения в файл squid.conf
+    */
++#if defined(__LP64__)
++  enum RedirType: long
++#else
+   enum RedirType
++#endif
+   {
+     REDIR_NONE,                 ///< Не используется встроенный (sams) редиректор
+     REDIR_INTERNAL,             ///< Используется встроенный (sams) редиректор
+@@ -101,7 +113,11 @@
+   /**
+    * @brief Способ обработки лог файла squid
+    */
++#if defined(__LP64__)
++  enum ParserType: long
++#else
+   enum ParserType
++#endif
+   {
+     PARSE_NONE,                 ///< Не обрабатывать
+     PARSE_DISCRET,              ///< Обрабатывать через N минут
+@@ -111,7 +127,11 @@
+   /**
+    * @brief Регистр букв
+    */
++#if defined(__LP64__)
++  enum CharCase: long
++#else
+   enum CharCase
++#endif
+   {
+     CASE_UPPER,                 ///< Заглавные буквы
+     CASE_LOWER,                 ///< Строчные буквы
+--- /dev/null
++++ b/etc/httpd2.4_conf
+@@ -0,0 +1,12 @@
++#
++# This configuration file allows the SAMS2 web management
++# to be accessed at http://localhost/sams2/
++#
++
++Alias /sams2 __WEBPREFIX
++
++<Directory __WEBPREFIX>
++    Require all granted
++    AddDefaultCharset UTF-8
++</Directory>
++
