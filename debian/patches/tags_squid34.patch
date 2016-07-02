@@ -1,0 +1,229 @@
+Фикс "+++WARNING: Unknown cache result" в syslog
+--- a/src/squidlogline.cpp
++++ b/src/squidlogline.cpp
+@@ -97,12 +97,18 @@
+ 
+   if (cr == "TCP_HIT")
+     res = TCP_HIT;
++  else if (cr == "TCP_HIT_ABORTED")
++    res = TCP_HIT_ABORTED;
+   else if (cr == "TCP_MEM_HIT")
+     res = TCP_MEM_HIT;
++  else if (cr == "TCP_MEM_HIT_ABORTED")
++    res = TCP_MEM_HIT_ABORTED;
+   else if (cr == "TCP_NEGATIVE_HIT")
+     res = TCP_NEGATIVE_HIT;
+   else if (cr == "TCP_MISS")
+     res = TCP_MISS;
++  else if (cr == "TCP_MISS_ABORTED")
++    res = TCP_MISS_ABORTED;
+   else if (cr == "TCP_REFRESH_HIT")
+     res = TCP_REFRESH_HIT;
+   else if (cr == "TCP_REFRESH_MODIFIED")
+@@ -111,8 +117,12 @@
+     res = TCP_REFRESH_UNMODIFIED;
+   else if (cr == "TCP_REF_FAIL_HIT")
+     res = TCP_REF_FAIL_HIT;
++  else if (cr == "TCP_REFRESH_FAIL_HIT")
++    res = TCP_REFRESH_FAIL_HIT;
+   else if (cr == "TCP_REFRESH_MISS")
+     res = TCP_REFRESH_MISS;
++  else if (cr == "TCP_ASYNC_HIT")
++    res = TCP_ASYNC_HIT;
+   else if (cr == "TCP_CLIENT_REFRESH")
+     res = TCP_CLIENT_REFRESH;
+   else if (cr == "TCP_CLIENT_REFRESH_MISS")
+@@ -127,6 +137,12 @@
+     res = TCP_SWAPFAIL_MISS;
+   else if (cr == "TCP_DENIED")
+     res = TCP_DENIED;
++  else if (cr == "TCP_DENIED_ABORTED")
++    res = TCP_DENIED_ABORTED;
++  else if (cr == "TCP_TUNNEL")
++    res = TCP_TUNNEL;
++  else if (cr == "TCP_REDIRECT")
++    res = TCP_REDIRECT;
+   else if (cr == "UDP_HIT")
+     res = UDP_HIT;
+   else if (cr == "UDP_HIT_OBJ")
+@@ -147,6 +163,10 @@
+     res = ERR_READ_ERROR;
+   else if (cr == "ERR_CONNECT_FAIL")
+     res = ERR_CONNECT_FAIL;
++  else if (cr == "TAG_NONE")
++    res = TAG_NONE;
++  else if (cr == "TAG_NONE_ABORTED")
++    res = TAG_NONE_ABORTED;
+   else
+     {
+       WARNING ("Unknown cache result " << cr);
+@@ -302,12 +322,18 @@
+ 
+   if (cr == TCP_HIT)
+     res = "TCP_HIT";
++  else if (cr == TCP_HIT_ABORTED)
++    res = "TCP_HIT_ABORTED";
+   else if (cr == TCP_MEM_HIT)
+     res = "TCP_MEM_HIT";
++  else if (cr == TCP_MEM_HIT_ABORTED)
++    res = "TCP_MEM_HIT_ABORTED";
+   else if (cr == TCP_NEGATIVE_HIT)
+     res = "TCP_NEGATIVE_HIT";
+   else if (cr == TCP_MISS)
+     res = "TCP_MISS";
++  else if (cr == TCP_MISS_ABORTED)
++    res = "TCP_MISS_ABORTED";
+   else if (cr == TCP_REFRESH_HIT)
+     res = "TCP_REFRESH_HIT";
+   else if (cr == TCP_REFRESH_MODIFIED)
+@@ -316,8 +342,12 @@
+     res = "TCP_REFRESH_UNMODIFIED";
+   else if (cr == TCP_REF_FAIL_HIT)
+     res = "TCP_REF_FAIL_HIT";
++  else if (cr == TCP_REFRESH_FAIL_HIT)
++    res = "TCP_REFRESH_FAIL_HIT";
+   else if (cr == TCP_REFRESH_MISS)
+     res = "TCP_REFRESH_MISS";
++  else if (cr == TCP_ASYNC_HIT)
++    res = "TCP_ASYNC_HIT";
+   else if (cr == TCP_CLIENT_REFRESH)
+     res = "TCP_CLIENT_REFRESH";
+   else if (cr == TCP_CLIENT_REFRESH_MISS)
+@@ -332,6 +362,12 @@
+     res = "TCP_SWAPFAIL_MISS";
+   else if (cr == TCP_DENIED)
+     res = "TCP_DENIED";
++  else if (cr == TCP_DENIED_ABORTED)
++    res = "TCP_DENIED_ABORTED";
++  else if (cr == TCP_REDIRECT)
++    res = "TCP_REDIRECT";
++  else if (cr == TCP_TUNNEL)
++    res = "TCP_TUNNEL";
+   else if (cr == UDP_HIT)
+     res = "UDP_HIT";
+   else if (cr == UDP_HIT_OBJ)
+@@ -352,6 +388,10 @@
+     res = "ERR_READ_ERROR";
+   else if (cr == ERR_CONNECT_FAIL)
+     res = "ERR_CONNECT_FAIL";
++  else if (cr == TAG_NONE)
++    res = "TAG_NONE";
++  else if (cr == TAG_NONE_ABORTED)
++    res = "TAG_NONE_ABORTED";
+   else
+     res = "CR_UNKNOWN";
+ 
+--- a/src/squidlogline.h
++++ b/src/squidlogline.h
+@@ -41,11 +41,13 @@
+   {
+     CR_UNKNOWN,                 ///< Unrecognized Cache Result
+     TCP_HIT,                    ///< A valid copy of the requested object was in the cache
++    TCP_HIT_ABORTED,
+ 
+     /** A valid copy of the requested object was in the cache,
+     *  AND it was in memory so it did not have to be read from disk
+     */
+     TCP_MEM_HIT,
++    TCP_MEM_HIT_ABORTED,       ///< *_ABORTED means the client TCP connection got closed on Squid, probably by the client browser.
+ 
+     /** The request was for a negatively-cached object.
+     *  Negative-caching refers to caching certain types of errors,
+@@ -53,7 +55,9 @@
+     *  is controlled with the negative_ttl configuration parameter.
+     */
+     TCP_NEGATIVE_HIT,
++
+     TCP_MISS,                   ///< The requested object was not in the cache
++    TCP_MISS_ABORTED,
+ 
+     /** The object was in the cache, but STALE. An If-Modified-Since request
+     *  was made and a "304 Not Modified" reply was received.
+@@ -66,20 +70,24 @@
+     * failed, so the old (stale) object was returned.
+     */
+     TCP_REF_FAIL_HIT,
++    TCP_REFRESH_FAIL_HIT,
+ 
+     /** The object was in the cache, but STALE. An If-Modified-Since request was made
+     *  and the reply contained new content.
+     */
+     TCP_REFRESH_MISS,
+     TCP_CLIENT_REFRESH,         ///< The client issued a request with the "no-cache" pragma
+-
+     TCP_CLIENT_REFRESH_MISS,
++    TCP_ASYNC_HIT,
+ 
+     TCP_IMS_HIT,                ///< The client issued an If-Modified-Since request and the object was in the cache and still fresh
+     TCP_IMS_MISS,               ///< The client issued an If-Modified-Since request for a stale object
+     TCP_SWAPFAIL,               ///< The object was believed to be in the cache, but could not be accessed
+     TCP_SWAPFAIL_MISS,          ///<
++    TCP_REDIRECT,
+     TCP_DENIED,                 ///< Access was denied for this request
++    TCP_DENIED_ABORTED,
++    TCP_TUNNEL,
+     UDP_HIT,                    ///< A valid copy of the requested object was in the cache
+     UDP_HIT_OBJ,                ///< Same as UDP_HIT
+     UDP_MISS,                   ///< The requested object was not in the cache
+@@ -89,7 +97,14 @@
+     ERR_CLIENT_ABORT,           ///< The client aborted its request
+     ERR_NO_CLIENTS,             ///< There are no clients requesting this URL any more
+     ERR_READ_ERROR,             ///< There was a read(2) error while retrieving this object
+-    ERR_CONNECT_FAIL            ///< Squid failed to connect to the server for this request
++    ERR_CONNECT_FAIL,           ///< Squid failed to connect to the server for this request
++
++    /** Spliced connection. No HTTP handling occured.
++    *   The TAG_* is a representation of what Squid has done in processing the transaction.
++    */
++    TAG_NONE_ABORTED,
++    TAG_NONE
++
+   };
+ 
+   /**
+--- a/src/squidlogparser.cpp
++++ b/src/squidlogparser.cpp
+@@ -445,19 +445,26 @@
+           ERROR ("Unknown cache result");
+           break;
+         case SquidLogLine::TCP_DENIED:
++        case SquidLogLine::TCP_DENIED_ABORTED:
+         case SquidLogLine::UDP_DENIED:
++        case SquidLogLine::TCP_REDIRECT:
+           break;
+         case SquidLogLine::TCP_HIT:
++        case SquidLogLine::TCP_HIT_ABORTED:
+         case SquidLogLine::TCP_MEM_HIT:
++        case SquidLogLine::TCP_MEM_HIT_ABORTED:
+         case SquidLogLine::TCP_REFRESH_HIT:
++        case SquidLogLine::TCP_REFRESH_FAIL_HIT:
+         case SquidLogLine::TCP_REFRESH_UNMODIFIED:
+         case SquidLogLine::TCP_REF_FAIL_HIT:
+         case SquidLogLine::TCP_IMS_HIT:
++        case SquidLogLine::TCP_ASYNC_HIT:
+         case SquidLogLine::UDP_HIT:
+           s_hit = sll.getSize ();
+           usr->addHit (s_hit);
+         case SquidLogLine::TCP_NEGATIVE_HIT:
+         case SquidLogLine::TCP_MISS:
++        case SquidLogLine::TCP_MISS_ABORTED:
+         case SquidLogLine::TCP_REFRESH_MISS:
+         case SquidLogLine::TCP_REFRESH_MODIFIED:
+         case SquidLogLine::TCP_CLIENT_REFRESH:
+@@ -465,6 +472,7 @@
+         case SquidLogLine::TCP_IMS_MISS:
+         case SquidLogLine::TCP_SWAPFAIL:
+         case SquidLogLine::TCP_SWAPFAIL_MISS:
++        case SquidLogLine::TCP_TUNNEL:
+         case SquidLogLine::UDP_HIT_OBJ:
+         case SquidLogLine::UDP_MISS:
+         case SquidLogLine::UDP_INVALID:
+@@ -473,6 +481,8 @@
+         case SquidLogLine::ERR_NO_CLIENTS:
+         case SquidLogLine::ERR_READ_ERROR:
+         case SquidLogLine::ERR_CONNECT_FAIL:
++        case SquidLogLine::TAG_NONE:
++        case SquidLogLine::TAG_NONE_ABORTED:
+           s_size = sll.getSize ();
+           usr->addSize (s_size);
+           break;
