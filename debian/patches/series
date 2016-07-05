@@ -1,6 +1,8 @@
-upstream_2.0.2.patch
-tags_squid34.patch
-lang_EN.patch
-redirect_squid34.patch
 libtool_link.patch
+redirect_squid34.patch
+lang_EN.patch
+tags_squid34.patch
+upstream_2.0.2.patch
 conf.patch
+httpd_m4.patch
+lost_docs.patch

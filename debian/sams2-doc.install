@@ -1,1 +1,3 @@
-doc/* usr/share/doc/sams2-doc/html
+#DOCS#
+usr/share/doc/*/* usr/share/doc/sams2-doc/html
+debian/etc/sams2-doc.conf etc/apache2/sites-available/

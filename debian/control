@@ -2,18 +2,18 @@ Source: sams2
 Section: net
 Priority: optional
 Maintainer: Pavel Vinogradov <Pavel.Vinogradov@nixdev.net>
-Build-Depends: debhelper (>= 5), automake, autotools-dev, libtool, libmysqlclient-dev, libpcre3-dev, quilt
-Standards-Version: 3.9.1
+Build-Depends: debhelper (>= 9), automake, autotools-dev, libtool, libmysqlclient-dev | unixodbc-dev | libpq-dev, libpcre3-dev, libldap2-dev
+Standards-Version: 3.9.5
 Homepage: http://sams.perm.ru/
 Vcs-Svn: http://sams2.googlecode.com/svn/
 Vcs-Browser: https://code.google.com/p/sams2/source/browse/
 
 Package: sams2
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Recommends: sams2-web, sams2-doc, mysql-client, squid
+Depends: ${shlibs:Depends}, ${misc:Depends}, squid | squid3
+Recommends: sams2-web, sams2-doc, mysql-client
 Suggests: squidguard, mysql-server
-Description: Squid Account Management System (SAMS) - Deamons
+Description: Squid Account Management System 2 (SAMS) - Daemons
  This program basically used for administrative purposes of squid proxy.
  There are access control for users by ntlm, ncsa, basic or ip
  authorization mode.
@@ -24,10 +24,10 @@ Description: Squid Account Management System (SAMS) - Deamons
 Package: sams2-web
 Section: web
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, apache2 | httpd, php5, php5-mysql, php5-gd
+Depends: ${misc:Depends}, apache2 | httpd, libapache2-mod-php5, php5, php5-mysql, php5-gd
 Recommends: sams2-doc
-Suggests: php5-gd, php5-ldap
-Description: Squid Account Management System (SAMS) - Web interface
+Suggests: php5-ldap, php-fpdf, php5-cli
+Description: Squid Account Management System 2 (SAMS) - Web interface
  This program basically used for administrative purposes of squid proxy.
  There are access control for users by ntlm, ncsa, basic or ip
  authorization mode.
@@ -38,6 +38,6 @@ Description: Squid Account Management System (SAMS) - Web interface
 Package: sams2-doc
 Section: doc
 Architecture: all
-Depends: doxygen, debhelper (>=5)
+Depends: ${misc:Depends}, doxygen
 Description: Squid Account Management System 2 (SAMS) - Documentation
  The sams2-doc package includes the HTML versions of the "Using SAMS2".

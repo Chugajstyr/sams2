@@ -20,6 +20,10 @@ set -e
 
 case "$1" in
     configure)
+	if which a2ensite >dev/null 2>&1 ; then
+	    a2ensite -q sams2-doc
+	    service apache2 reload
+	fi
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
