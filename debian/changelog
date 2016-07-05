@@ -1,6 +1,6 @@
-sams2 (2.0.0-2~2.gbp7c1a5a) UNRELEASED; urgency=medium
+sams2 (2.0.0-2~3.gbp70223e) UNRELEASED; urgency=medium
 
-  ** SNAPSHOT build @7c1a5a686b0f8029dde9b9d210e8b870bd9924f8 **
+  ** SNAPSHOT build @70223e254887b03147e774c318ff4251bb41c3ae **
 
   [ blaze ]
   * Remove reference to sams.nixdev.net
@@ -10,7 +10,7 @@ sams2 (2.0.0-2~2.gbp7c1a5a) UNRELEASED; urgency=medium
   * Исправлена ошибка в сохранении назначенных шаблону списков перенаправления
   * Добавлен просмотр логов SAMS
   * Добавление логов при авторизации пользователей в веб интерфейсе
-  * Добавление сообщение в логи при открытии на запись файла паролей в ncsa авторизации
+  * Добавление сообщение в логи при открытии на запись файла паролей в ncsa авт.
   * Добавлеа возмозжность очистки логов и данных о трафике из веб интерфейса
 
   [ Chugajstyr ]
@@ -19,6 +19,8 @@ sams2 (2.0.0-2~2.gbp7c1a5a) UNRELEASED; urgency=medium
   * Фикс "пустой" страницы setup.php
   * Фикс "+++WARNING: Unknown cache result" в syslog
   * Импорт исправлений из upstream v2.0.2
+  * Переосмыслены файлы Debhelper в каталоге "debian"
+  * Исправлено отсутствие нескольких файлов html в документации
 
  -- Chugajstyr <notexist@gmail.com>  Thu, 30 Jun 2016 14:41:13 +0300
 
