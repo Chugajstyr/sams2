@@ -1,6 +1,6 @@
-sams2 (2.0.0-2~3.gbp70223e) UNRELEASED; urgency=medium
+sams2 (2.0.0-2~4.gbp694b1a) UNRELEASED; urgency=medium
 
-  ** SNAPSHOT build @70223e254887b03147e774c318ff4251bb41c3ae **
+  ** SNAPSHOT build @694b1a65a6b5778e39c46d7d64b9255904c3a3f1 **
 
   [ blaze ]
   * Remove reference to sams.nixdev.net
@@ -21,6 +21,7 @@ sams2 (2.0.0-2~3.gbp70223e) UNRELEASED; urgency=medium
   * Импорт исправлений из upstream v2.0.2
   * Переосмыслены файлы Debhelper в каталоге "debian"
   * Исправлено отсутствие нескольких файлов html в документации
+  * Исправлены ссылки на бинарник Squid3.x.
 
  -- Chugajstyr <notexist@gmail.com>  Thu, 30 Jun 2016 14:41:13 +0300
 

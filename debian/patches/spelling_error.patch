@@ -1,0 +1,59 @@
+Фикс lintian "spelling-error-in-binary".
+--- a/src/dbquery.cpp
++++ b/src/dbquery.cpp
+@@ -65,47 +65,47 @@
+ 
+ bool DBQuery::sendQueryDirect (const string & query)
+ {
+-  WARNING ("[DBQuery::" << __FUNCTION__ << "] " << " must be overriden.");
++  WARNING ("[DBQuery::" << __FUNCTION__ << "] " << " must be overridden.");
+   return false;
+ }
+ 
+ bool DBQuery::bindCol (uint colNum, VarType dstType, void *buf, int bufLen)
+ {
+-  WARNING ("[DBQuery::" << __FUNCTION__ << "] " << " must be overriden.");
++  WARNING ("[DBQuery::" << __FUNCTION__ << "] " << " must be overridden.");
+   return false;
+ }
+ 
+ bool DBQuery::bindParam (uint num, VarType dstType, void *buf, int bufLen)
+ {
+-  WARNING ("[DBQuery::" << __FUNCTION__ << "] " << " must be overriden.");
++  WARNING ("[DBQuery::" << __FUNCTION__ << "] " << " must be overridden.");
+   return false;
+ }
+ 
+ bool DBQuery::prepareQuery (const string & query)
+ {
+-  WARNING ("[DBQuery::" << __FUNCTION__ << "] " << " must be overriden.");
++  WARNING ("[DBQuery::" << __FUNCTION__ << "] " << " must be overridden.");
+   return false;
+ }
+ 
+ bool DBQuery::sendQuery ()
+ {
+-  WARNING ("[DBQuery::" << __FUNCTION__ << "] " << " must be overriden.");
++  WARNING ("[DBQuery::" << __FUNCTION__ << "] " << " must be overridden.");
+   return false;
+ }
+ 
+ bool DBQuery::fetch ()
+ {
+-  WARNING ("[DBQuery::" << __FUNCTION__ << "] " << " must be overriden.");
++  WARNING ("[DBQuery::" << __FUNCTION__ << "] " << " must be overridden.");
+   return false;
+ }
+ 
+ long DBQuery::affectedRows ()
+ {
+-  WARNING ("[DBQuery::" << __FUNCTION__ << "] " << " must be overriden.");
++  WARNING ("[DBQuery::" << __FUNCTION__ << "] " << " must be overridden.");
+   return 0;
+ }
+ 
+ void DBQuery::destroy ()
+ {
+-  WARNING ("[DBQuery::" << __FUNCTION__ << "] " << " must be overriden.");
++  WARNING ("[DBQuery::" << __FUNCTION__ << "] " << " must be overridden.");
+ }

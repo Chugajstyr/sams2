@@ -1,0 +1,21 @@
+Исправлены ссылки на бинарник Squid. Теперь они указывают на "squid3".
+--- a/src/samsdaemon.cpp
++++ b/src/samsdaemon.cpp
+@@ -320,7 +320,7 @@
+     }
+ 
+   string squidbindir = SamsConfig::getString (defSQUIDBINDIR, err);
+-  if (!fileExist (squidbindir + "/squid"))
++  if (!fileExist (squidbindir + "/squid3"))
+     {
+       ERROR ("Invalid " << defSQUIDBINDIR << ". Check config file.");
+       exit (1);
+@@ -447,7 +447,7 @@
+   int seconds_to_parse = 0;
+   int seconds_to_reconnect = reconnect_timeout;
+ 
+-  cmdreconfiguresquid = squidbindir + "/squid -k reconfigure";
++  cmdreconfiguresquid = squidbindir + "/squid3 -k reconfigure";
+ 
+   time_t loop_start = time (NULL);
+   time_t loop_end = time (NULL);

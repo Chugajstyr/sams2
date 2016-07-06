@@ -6,3 +6,5 @@ upstream_2.0.2.patch
 conf.patch
 httpd_m4.patch
 lost_docs.patch
+spelling_error.patch
+squid3.patch
