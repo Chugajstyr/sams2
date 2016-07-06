@@ -1,4 +1,5 @@
 etc/sams2.conf etc
+debian/etc/sams2-rsyslog.conf etc/rsyslog.d
 usr/bin/sams2daemon usr/bin/samsparser usr/bin/sams2redir usr/bin
 #usr/bin/sams_send_email usr/bin
 #usr/lib/$(DEB_HOST_MULTIARCH)/sams2/lib*.so* usr/lib/$(DEB_HOST_MULTIARCH)/sams2
