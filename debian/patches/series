@@ -8,3 +8,4 @@ httpd_m4.patch
 lost_docs.patch
 spelling_error.patch
 squid3.patch
+autoconf269.patch

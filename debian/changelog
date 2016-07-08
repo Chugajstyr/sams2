@@ -1,6 +1,6 @@
-sams2 (2.0.0-2~4.gbp694b1a) UNRELEASED; urgency=medium
+sams2 (2.0.0-2~5.gbpe19bb6) UNRELEASED; urgency=medium
 
-  ** SNAPSHOT build @694b1a65a6b5778e39c46d7d64b9255904c3a3f1 **
+  ** SNAPSHOT build @e19bb6182f1955404b537ede0210018f35520c10 **
 
   [ blaze ]
   * Remove reference to sams.nixdev.net
@@ -22,6 +22,8 @@ sams2 (2.0.0-2~4.gbp694b1a) UNRELEASED; urgency=medium
   * Переосмыслены файлы Debhelper в каталоге "debian"
   * Исправлено отсутствие нескольких файлов html в документации
   * Исправлены ссылки на бинарник Squid3.x.
+  * Добавлена ротация логов.
+  * Переосмыслены Makefile.am и configure.in в соответствии с GNU Autoconf 2.69
 
  -- Chugajstyr <notexist@gmail.com>  Thu, 30 Jun 2016 14:41:13 +0300
 

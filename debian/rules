@@ -24,12 +24,12 @@ DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 
 # main packaging script based on dh7 syntax
 %:
-	dh $@
+	dh $@ --with autoreconf
 
 # предварительное конфигурирование Autoconf
-override_dh_auto_configure:
-	make -f Makefile.cvs
-	dh_auto_configure
+#override_dh_auto_configure:
+#	make -f Makefile.cvs
+#	dh_auto_configure
 
 # фикс lintian warning "postinst-has-useless-call-to-ldconfig"
 override_dh_makeshlibs:

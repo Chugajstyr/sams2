@@ -1,0 +1,358 @@
+Переосмыслены Makefile.am и configure.in (см. Autotools лог).
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -2,6 +2,8 @@
+ # have all needed files, that a GNU package needs
+ AUTOMAKE_OPTIONS = foreign 1.4
+ 
++ACLOCAL_AMFLAGS = -I m4
++
+ SUBDIRS = src php doc plugins/loadavg plugins/fsusage
+ bin_SCRIPTS = scripts/sams_send_email
+ 
+--- /dev/null
++++ b/configure.ac
+@@ -0,0 +1,163 @@
++#                                               -*- Autoconf -*-
++# Process this file with autoconf to produce a configure script.
++
++AC_PREREQ([2.69])
++AC_INIT([SAMS2], [2.0.0], [sams@nixdev.net])
++AM_INIT_AUTOMAKE
++AC_CONFIG_SRCDIR([src/tools.h])
++AC_CONFIG_HEADERS([src/config.h])
++
++AC_CONFIG_MACRO_DIR([m4])
++
++AC_GNU_SOURCE
++
++# Checks for programs.
++AC_PROG_AWK
++AC_PROG_CXX
++AC_PROG_CC
++AC_PROG_INSTALL
++AC_PROG_LN_S
++AC_PROG_MAKE_SET
++LT_INIT([dlopen])
++
++# Checks for libraries.
++
++# Checks for header files.
++AC_CHECK_HEADERS([arpa/inet.h fcntl.h limits.h mach/mach.h mntent.h netdb.h netinet/in.h nlist.h \
++		     stdint.h stdlib.h string.h strings.h sys/mount.h sys/param.h sys/socket.h \
++		     sys/statvfs.h sys/time.h syslog.h unistd.h utmp.h utmpx.h])
++
++# Checks for typedefs, structures, and compiler characteristics.
++AC_CHECK_HEADER_STDBOOL
++AC_C_INLINE
++AC_TYPE_PID_T
++AC_TYPE_SIZE_T
++AC_C_RESTRICT
++
++# Checks for library functions.
++AC_FUNC_ERROR_AT_LINE
++AC_FUNC_FORK
++AC_FUNC_GETMNTENT
++AC_FUNC_MALLOC
++AC_FUNC_MKTIME
++AC_FUNC_REALLOC
++AC_FUNC_STRTOD
++AC_CHECK_FUNCS([bzero gethostbyaddr gethostbyname getmntent getmntinfo inet_ntoa memmove memset \
++		pstat_getdynamic strcasecmp strchr strdup strerror strstr])
++AC_REPLACE_FNMATCH
++
++gl_READUTMP
++gl_SYS_PROC_UPTIME
++gl_GETLOADAVG([plugins/loadavg])
++gl_FSUSAGE
++#gl_LIST_MOUNTED_FILE_SYSTEMS
++
++# SCO-ODT-3.0 is reported to need -lufc for crypt.
++# NetBSD needs -lcrypt for crypt.
++# Uncomment this, if function CryptPassword is used
++#sams_saved_libs="$LIBS"
++#AC_SEARCH_LIBS(crypt, [ufc crypt],
++#               [test "$ac_cv_search_crypt" = "none required" ||
++#                LIB_CRYPT="$ac_cv_search_crypt"])
++#LIBS="$sams_saved_libs"
++#AC_SUBST(LIB_CRYPT)
++
++AC_CHECK_LDAP([use_ldap_dev])
++AC_CHECK_SRC_DOCS
++AC_CHECK_PCRE([which_pcre])
++AC_CHECK_MYSQL([use_mysql_dev])
++AC_CHECK_PQ([use_pq_dev])
++AC_CHECK_UNIXODBC([use_unixodbc_dev])
++AC_CHECK_HTTPD([httpd_server])
++AC_SUBST(httpd_server)
++AC_SUBST(HTTPD)
++AC_SUBST(HTTPD_ROOT)
++AC_SUBST(SERVER_CONFIG_FILE)
++AC_SUBST(HTTPD_INCLUDE)
++
++
++use_dl_dev="no"
++if test "$lt_cv_dlopen" = "dlopen"; then
++    if test ! x"$lt_cv_dlopen_libs" = "x"; then
++        dl_libname=`echo $lt_cv_dlopen_libs | sed -s 's|^-l||g'`
++        AC_CHECK_LIB([$dl_libname], [dlopen],  [have_dlopen=yes],  [])
++        AC_CHECK_LIB([$dl_libname], [dlclose], [have_dlclose=yes], [])
++        AC_CHECK_LIB([$dl_libname], [dlerror], [have_dlerror=yes], [])
++        AC_CHECK_LIB([$dl_libname], [dlsym],   [have_dlsym=yes],   [])
++    else
++        AC_CHECK_FUNC([dlopen],  [have_dlopen=yes],  [])
++        AC_CHECK_FUNC([dlclose], [have_dlclose=yes], [])
++        AC_CHECK_FUNC([dlerror], [have_dlerror=yes], [])
++        AC_CHECK_FUNC([dlsym],   [have_dlsym=yes],   [])
++    fi
++    if test "$have_dlopen" = "yes" -a "$have_dlclose" = "yes" -a "$have_dlerror" = "yes" -a "$have_dlsym" = "yes"; then
++        AC_DEFINE([USE_DL], [1], [Define to 1 if compile with dynamic plugin support])
++        LIBS="$LIBS $lt_cv_dlopen_libs"
++        use_dl_dev="yes"
++    fi
++fi
++
++
++
++AC_CONFIG_FILES([Makefile src/Makefile php/Makefile doc/Makefile plugins/loadavg/Makefile plugins/fsusage/Makefile])
++AC_OUTPUT
++
++
++eval path_sysconfdir=$sysconfdir
++eval path_bindir=$bindir
++eval path_bindir=$path_bindir
++eval path_datadir=$datadir
++eval path_datadir=$path_datadir
++eval httpd_server=$httpd_server
++eval HTTPD_ROOT=$HTTPD_ROOT
++eval SERVER_CONFIG_FILE=$SERVER_CONFIG_FILE
++eval HTTPD_INCLUDE=$HTTPD_INCLUDE
++if test -f /etc/debian_version  ; then eval distr="debian" ; else eval distr="other" ; fi
++if test -f /etc/debian_version  ; then eval apache24=`apache2 -v | grep "/2.4" &>/dev/null && echo 1 || echo 0 &` ; else eval apache24=`httpd -v | grep "/2.4" &>/dev/null && echo 1 || echo 0 &` ; fi
++
++#echo "HTTPD_ROOT:        $HTTPD_ROOT"
++#echo "SERVER_CONFIG_FILE: $SERVER_CONFIG_FILE"
++#echo "HTTPD_INCLUDE:      $HTTPD_INCLUDE"
++#echo "debian              $debian"
++
++echo ""
++echo "Use MySQL API:      $use_mysql_dev"
++echo "Use PostgreSQL API: $use_pq_dev"
++echo "Use unixODBC API:   $use_unixodbc_dev"
++echo "Use LDAP API:       $use_ldap_dev"
++echo "Using pcre:         $which_pcre"
++echo "Use dynamic plugin: $use_dl_dev"
++echo ""
++echo "Locations:"
++echo "config file:        $path_sysconfdir/sams2.conf"
++echo "daemons:            $path_bindir"
++echo "web interface:      $path_datadir/${PACKAGE}"
++echo "documentation:      $path_datadir/doc/${PACKAGE}-${VERSION}"
++
++echo ""
++echo "Note: If later on, you will use"
++echo "      make install exec_prefix=/foo"
++echo "   or make install DESTDIR=/tmp/package"
++echo "      the locations above would be incorrect"
++echo ""
++
++if test "$which_pcre" = "none"; then
++    #echo "WARNING: Regular expressions won't work without pcre or pcrecpp"
++    #echo ""
++    AC_MSG_WARN([Regular expressions won't work without pcre or pcrecpp.
++     ])
++fi
++
++if test "$use_mysql_dev" = "no" -a "$use_pq_dev" = "no" -a "$use_unixodbc_dev" = "no"; then
++	#AC_MSG_WARN([Neither MySQL nor PostgreSQL nor unixODBC API detected.])
++	#AC_MSG_WARN([Install at least one of them and run configure again.])
++	AC_MSG_ERROR([Neither MySQL nor PostgreSQL nor unixODBC API detected.
++	Install at least one of them and run configure again.
++	Aborted.])
++else
++        #echo "Configure completed. Run make (or gmake) to build the programs."
++	AC_MSG_NOTICE([Configure completed.
++	 Run make (or gmake) to build the programs.])
++fi
++
++echo ""
+--- a/configure.in
++++ /dev/null
+@@ -1,144 +0,0 @@
+-AC_INIT(sams2, 2.0.0, sams@nixdev.net)
+-AM_INIT_AUTOMAKE(sams2, 2.0.0)
+-AC_CONFIG_SRCDIR([src/tools.h])
+-AC_CONFIG_HEADER([src/config.h])
+-
+-AC_GNU_SOURCE
+-
+-# Checks for programs.
+-AC_PROG_CXX
+-AC_PROG_CC
+-AC_PROG_CPP
+-AC_PROG_INSTALL
+-AC_PROG_LN_S
+-AC_PROG_MAKE_SET
+-AC_LIBTOOL_DLOPEN
+-AC_PROG_LIBTOOL
+-
+-
+-# Checks for header files.
+-AC_HEADER_DIRENT
+-AC_CHECK_HEADERS([arpa/inet.h netdb.h syslog.h unistd.h])
+-
+-# Checks for typedefs, structures, and compiler characteristics.
+-AC_HEADER_STDBOOL
+-AC_C_CONST
+-AC_TYPE_PID_T
+-AC_C_RESTRICT
+-AC_STRUCT_TM
+-
+-# Checks for library functions.
+-AC_FUNC_CLOSEDIR_VOID
+-AC_REPLACE_FNMATCH
+-AC_FUNC_FORK
+-AC_FUNC_MALLOC
+-AC_HEADER_STDC
+-AC_FUNC_MKTIME
+-AC_FUNC_STRFTIME
+-AC_CHECK_FUNCS([inet_ntoa memset strerror])
+-
+-gl_READUTMP
+-gl_SYS_PROC_UPTIME
+-gl_GETLOADAVG([plugins/loadavg])
+-gl_FSUSAGE
+-#gl_LIST_MOUNTED_FILE_SYSTEMS
+-
+-# SCO-ODT-3.0 is reported to need -lufc for crypt.
+-# NetBSD needs -lcrypt for crypt.
+-# Uncomment this, if function CryptPassword is used
+-#sams_saved_libs="$LIBS"
+-#AC_SEARCH_LIBS(crypt, [ufc crypt],
+-#               [test "$ac_cv_search_crypt" = "none required" ||
+-#                LIB_CRYPT="$ac_cv_search_crypt"])
+-#LIBS="$sams_saved_libs"
+-#AC_SUBST(LIB_CRYPT)
+-
+-AC_CHECK_LDAP([use_ldap_dev])
+-AC_CHECK_SRC_DOCS
+-AC_CHECK_PCRE([which_pcre])
+-AC_CHECK_MYSQL([use_mysql_dev])
+-AC_CHECK_PQ([use_pq_dev])
+-AC_CHECK_UNIXODBC([use_unixodbc_dev])
+-AC_CHECK_HTTPD([httpd_server])
+-AC_SUBST(httpd_server)
+-AC_SUBST(HTTPD_ROOT)
+-AC_SUBST(SERVER_CONFIG_FILE)
+-AC_SUBST(HTTPD_INCLUDE)
+-
+-
+-use_dl_dev="no"
+-if test "$lt_cv_dlopen" = "dlopen"; then
+-    if test ! x"$lt_cv_dlopen_libs" = "x"; then
+-        dl_libname=`echo $lt_cv_dlopen_libs | sed -s 's|^-l||g'`
+-        AC_CHECK_LIB([$dl_libname], [dlopen],  [have_dlopen=yes],  [])
+-        AC_CHECK_LIB([$dl_libname], [dlclose], [have_dlclose=yes], [])
+-        AC_CHECK_LIB([$dl_libname], [dlerror], [have_dlerror=yes], [])
+-        AC_CHECK_LIB([$dl_libname], [dlsym],   [have_dlsym=yes],   [])
+-    else
+-        AC_CHECK_FUNC([dlopen],  [have_dlopen=yes],  [])
+-        AC_CHECK_FUNC([dlclose], [have_dlclose=yes], [])
+-        AC_CHECK_FUNC([dlerror], [have_dlerror=yes], [])
+-        AC_CHECK_FUNC([dlsym],   [have_dlsym=yes],   [])
+-    fi
+-    if test "$have_dlopen" = "yes" -a "$have_dlclose" = "yes" -a "$have_dlerror" = "yes" -a "$have_dlsym" = "yes"; then
+-        AC_DEFINE([USE_DL], [1], [Define to 1 if compile with dynamic plugin support])
+-        LIBS="$LIBS $lt_cv_dlopen_libs"
+-        use_dl_dev="yes"
+-    fi
+-fi
+-
+-AC_CONFIG_FILES([Makefile src/Makefile php/Makefile doc/Makefile plugins/loadavg/Makefile plugins/fsusage/Makefile])
+-AC_OUTPUT
+-
+-eval path_sysconfdir=$sysconfdir
+-eval path_bindir=$bindir
+-eval path_bindir=$path_bindir
+-eval path_datadir=$datadir
+-eval path_datadir=$path_datadir
+-eval httpd_server=$httpd_server
+-eval HTTPD_ROOT=$HTTPD_ROOT
+-eval SERVER_CONFIG_FILE=$SERVER_CONFIG_FILE
+-eval HTTPD_INCLUDE=$HTTPD_INCLUDE
+-if test -f /etc/debian_version  ; then eval distr="debian" ; else eval distr="other" ; fi
+-if test -f /etc/debian_version  ; then eval apache24=`apache2 -v | grep "/2.4" &>/dev/null && echo 1 || echo 0 &` ; else eval apache24=`httpd -v | grep "/2.4" &>/dev/null && echo 1 || echo 0 &` ; fi
+-
+-#echo "HTTPD_ROOT:        $HTTPD_ROOT"
+-#echo "SERVER_CONFIG_FILE: $SERVER_CONFIG_FILE"
+-#echo "HTTPD_INCLUDE:      $HTTPD_INCLUDE"
+-#echo "debian              $debian"
+-
+-echo ""
+-echo "Use MySQL API:      $use_mysql_dev"
+-echo "Use PostgreSQL API: $use_pq_dev"
+-echo "Use unixODBC API:   $use_unixodbc_dev"
+-echo "Use LDAP API:       $use_ldap_dev"
+-echo "Using pcre:         $which_pcre"
+-echo "Use dynamic plugin: $use_dl_dev"
+-echo ""
+-echo "Locations:"
+-echo "config file:        $path_sysconfdir/sams2.conf"
+-echo "daemons:            $path_bindir"
+-echo "web interface:      $path_datadir/${PACKAGE}"
+-echo "documentation:      $path_datadir/doc/${PACKAGE}-${VERSION}"
+-
+-echo ""
+-echo "Note: If later on, you will use"
+-echo "      make install exec_prefix=/foo"
+-echo "   or make install DESTDIR=/tmp/package"
+-echo "      the locations above would be incorrect"
+-echo ""
+-
+-if test "$which_pcre" = "none"; then
+-    echo "WARNING: Regular expressions won't work without pcre or pcrecpp"
+-    echo ""
+-fi
+-
+-if test "$use_mysql_dev" = "no" -a "$use_pq_dev" = "no" -a "$use_unixodbc_dev" = "no"; then
+-	echo "Neither MySQL nor PostgreSQL nor unixODBC API detected."
+-	echo "Install at least one of them and run configure again."
+-	echo "Aborted."
+-else
+-	echo "Configure completed. Run make (or gmake) to build the programs."
+-fi
+-
+-echo ""
+--- a/plugins/fsusage/Makefile.am
++++ b/plugins/fsusage/Makefile.am
+@@ -8,7 +8,7 @@
+ 
+ DISTCLEANFILES = Makefile.in
+ 
+-INCLUDES = $(all_includes)
++AM_CPPFLAGS = $(all_includes)
+ 
+ AM_CXXFLAGS = -Wall
+ 
+--- a/plugins/loadavg/Makefile.am
++++ b/plugins/loadavg/Makefile.am
+@@ -8,7 +8,7 @@
+ 
+ DISTCLEANFILES = Makefile.in
+ 
+-INCLUDES = $(all_includes)
++AM_CPPFLAGS = $(all_includes)
+ 
+ AM_CXXFLAGS = -Wall
+ 
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -6,7 +6,7 @@
+ bin_PROGRAMS = samsparser sams2daemon sams2redir
+ 
+ # set the include path found by configure
+-INCLUDES = $(all_includes)
++AM_CPPFLAGS = $(all_includes)
+ 
+ # the library search path.
+ samsparser_SOURCES = \
