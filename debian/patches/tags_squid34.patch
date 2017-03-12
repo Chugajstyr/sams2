@@ -1,7 +1,7 @@
 Фикс "+++WARNING: Unknown cache result" в syslog
 --- a/src/squidlogline.cpp
 +++ b/src/squidlogline.cpp
-@@ -97,12 +97,18 @@
+@@ -97,12 +97,20 @@
  
    if (cr == "TCP_HIT")
      res = TCP_HIT;
@@ -17,15 +17,21 @@
      res = TCP_MISS;
 +  else if (cr == "TCP_MISS_ABORTED")
 +    res = TCP_MISS_ABORTED;
++  else if (cr == "TCP_MISS_TIMEDOUT")
++    res = TCP_MISS_TIMEDOUT;
    else if (cr == "TCP_REFRESH_HIT")
      res = TCP_REFRESH_HIT;
    else if (cr == "TCP_REFRESH_MODIFIED")
-@@ -111,8 +117,12 @@
+@@ -111,22 +119,44 @@
      res = TCP_REFRESH_UNMODIFIED;
    else if (cr == "TCP_REF_FAIL_HIT")
      res = TCP_REF_FAIL_HIT;
 +  else if (cr == "TCP_REFRESH_FAIL_HIT")
 +    res = TCP_REFRESH_FAIL_HIT;
++  else if (cr == "TCP_REFRESH_FAIL_ERR")
++    res = TCP_REFRESH_FAIL_ERR;
++  else if (cr == "TCP_REFRESH_FAIL_OLD")
++    res = TCP_REFRESH_FAIL_OLD;
    else if (cr == "TCP_REFRESH_MISS")
      res = TCP_REFRESH_MISS;
 +  else if (cr == "TCP_ASYNC_HIT")
@@ -33,7 +39,20 @@
    else if (cr == "TCP_CLIENT_REFRESH")
      res = TCP_CLIENT_REFRESH;
    else if (cr == "TCP_CLIENT_REFRESH_MISS")
-@@ -127,6 +137,12 @@
+     res = TCP_CLIENT_REFRESH_MISS;
++  else if (cr == "TCP_CLIENT_REFRESH_MISS_ABORTED")
++    res = TCP_CLIENT_REFRESH_MISS_ABORTED;
+   else if (cr == "TCP_IMS_HIT")
+     res = TCP_IMS_HIT;
++  else if (cr == "TCP_IMS_HIT_ABORTED")
++    res = TCP_IMS_HIT_ABORTED;
+   else if (cr == "TCP_IMS_MISS")
+     res = TCP_IMS_MISS;
++  else if (cr == "TCP_INM_HIT")
++    res = TCP_INM_HIT;
+   else if (cr == "TCP_SWAPFAIL")
+     res = TCP_SWAPFAIL;
+   else if (cr == "TCP_SWAPFAIL_MISS")
      res = TCP_SWAPFAIL_MISS;
    else if (cr == "TCP_DENIED")
      res = TCP_DENIED;
@@ -43,10 +62,12 @@
 +    res = TCP_TUNNEL;
 +  else if (cr == "TCP_REDIRECT")
 +    res = TCP_REDIRECT;
++  else if (cr == "TCP_REDIRECT_ABORTED")
++    res = TCP_REDIRECT_ABORTED;
    else if (cr == "UDP_HIT")
      res = UDP_HIT;
    else if (cr == "UDP_HIT_OBJ")
-@@ -147,6 +163,10 @@
+@@ -147,6 +177,10 @@
      res = ERR_READ_ERROR;
    else if (cr == "ERR_CONNECT_FAIL")
      res = ERR_CONNECT_FAIL;
@@ -57,7 +78,7 @@
    else
      {
        WARNING ("Unknown cache result " << cr);
-@@ -302,12 +322,18 @@
+@@ -302,12 +336,20 @@
  
    if (cr == TCP_HIT)
      res = "TCP_HIT";
@@ -73,15 +94,21 @@
      res = "TCP_MISS";
 +  else if (cr == TCP_MISS_ABORTED)
 +    res = "TCP_MISS_ABORTED";
++  else if (cr == TCP_MISS_TIMEDOUT)
++    res = "TCP_MISS_TIMEDOUT";
    else if (cr == TCP_REFRESH_HIT)
      res = "TCP_REFRESH_HIT";
    else if (cr == TCP_REFRESH_MODIFIED)
-@@ -316,8 +342,12 @@
+@@ -316,22 +358,44 @@
      res = "TCP_REFRESH_UNMODIFIED";
    else if (cr == TCP_REF_FAIL_HIT)
      res = "TCP_REF_FAIL_HIT";
 +  else if (cr == TCP_REFRESH_FAIL_HIT)
 +    res = "TCP_REFRESH_FAIL_HIT";
++  else if (cr == TCP_REFRESH_FAIL_ERR)
++    res = "TCP_REFRESH_FAIL_ERR";
++  else if (cr == TCP_REFRESH_FAIL_OLD)
++    res = "TCP_REFRESH_FAIL_OLD";
    else if (cr == TCP_REFRESH_MISS)
      res = "TCP_REFRESH_MISS";
 +  else if (cr == TCP_ASYNC_HIT)
@@ -89,7 +116,20 @@
    else if (cr == TCP_CLIENT_REFRESH)
      res = "TCP_CLIENT_REFRESH";
    else if (cr == TCP_CLIENT_REFRESH_MISS)
-@@ -332,6 +362,12 @@
+     res = "TCP_CLIENT_REFRESH_MISS";
++  else if (cr == TCP_CLIENT_REFRESH_MISS_ABORTED)
++    res = "TCP_CLIENT_REFRESH_MISS_ABORTED";
+   else if (cr == TCP_IMS_HIT)
+     res = "TCP_IMS_HIT";
++  else if (cr == TCP_IMS_HIT_ABORTED)
++    res = "TCP_IMS_HIT_ABORTED";
+   else if (cr == TCP_IMS_MISS)
+     res = "TCP_IMS_MISS";
++  else if (cr == TCP_INM_HIT)
++    res = "TCP_INM_HIT";
+   else if (cr == TCP_SWAPFAIL)
+     res = "TCP_SWAPFAIL";
+   else if (cr == TCP_SWAPFAIL_MISS)
      res = "TCP_SWAPFAIL_MISS";
    else if (cr == TCP_DENIED)
      res = "TCP_DENIED";
@@ -97,12 +137,14 @@
 +    res = "TCP_DENIED_ABORTED";
 +  else if (cr == TCP_REDIRECT)
 +    res = "TCP_REDIRECT";
++  else if (cr == TCP_REDIRECT_ABORTED)
++    res = "TCP_REDIRECT_ABORTED";
 +  else if (cr == TCP_TUNNEL)
 +    res = "TCP_TUNNEL";
    else if (cr == UDP_HIT)
      res = "UDP_HIT";
    else if (cr == UDP_HIT_OBJ)
-@@ -352,6 +388,10 @@
+@@ -352,6 +416,10 @@
      res = "ERR_READ_ERROR";
    else if (cr == ERR_CONNECT_FAIL)
      res = "ERR_CONNECT_FAIL";
@@ -119,31 +161,34 @@
    {
      CR_UNKNOWN,                 ///< Unrecognized Cache Result
      TCP_HIT,                    ///< A valid copy of the requested object was in the cache
-+    TCP_HIT_ABORTED,
++    TCP_HIT_ABORTED,            ///< *_ABORTED means the client TCP connection got closed on Squid, probably by the client browser.
  
      /** A valid copy of the requested object was in the cache,
      *  AND it was in memory so it did not have to be read from disk
      */
      TCP_MEM_HIT,
-+    TCP_MEM_HIT_ABORTED,       ///< *_ABORTED means the client TCP connection got closed on Squid, probably by the client browser.
++    TCP_MEM_HIT_ABORTED,
  
      /** The request was for a negatively-cached object.
      *  Negative-caching refers to caching certain types of errors,
-@@ -53,7 +55,9 @@
+@@ -53,7 +55,10 @@
      *  is controlled with the negative_ttl configuration parameter.
      */
      TCP_NEGATIVE_HIT,
 +
      TCP_MISS,                   ///< The requested object was not in the cache
 +    TCP_MISS_ABORTED,
++    TCP_MISS_TIMEDOUT,          ///< The response was not completed due to a connection timeout.
  
      /** The object was in the cache, but STALE. An If-Modified-Since request
      *  was made and a "304 Not Modified" reply was received.
-@@ -66,20 +70,24 @@
+@@ -66,20 +71,35 @@
      * failed, so the old (stale) object was returned.
      */
      TCP_REF_FAIL_HIT,
 +    TCP_REFRESH_FAIL_HIT,
++    TCP_REFRESH_FAIL_ERR,
++    TCP_REFRESH_FAIL_OLD,
  
      /** The object was in the cache, but STALE. An If-Modified-Since request was made
      *  and the reply contained new content.
@@ -152,20 +197,30 @@
      TCP_CLIENT_REFRESH,         ///< The client issued a request with the "no-cache" pragma
 -
      TCP_CLIENT_REFRESH_MISS,
++    TCP_CLIENT_REFRESH_MISS_ABORTED,
++
++    /** The request was generated internally by Squid.
++    * Usually this is background fetches for cache information exchanges,
++    * background revalidation from stale-while-revalidate cache controls, or ESI sub-objects being loaded.
++    */
 +    TCP_ASYNC_HIT,
  
      TCP_IMS_HIT,                ///< The client issued an If-Modified-Since request and the object was in the cache and still fresh
++    TCP_IMS_HIT_ABORTED,
      TCP_IMS_MISS,               ///< The client issued an If-Modified-Since request for a stale object
++    TCP_INM_HIT,
      TCP_SWAPFAIL,               ///< The object was believed to be in the cache, but could not be accessed
-     TCP_SWAPFAIL_MISS,          ///<
-+    TCP_REDIRECT,
+-    TCP_SWAPFAIL_MISS,          ///<
++    TCP_SWAPFAIL_MISS,
++    TCP_REDIRECT,               ///< Squid generated an HTTP redirect response to this request.
++    TCP_REDIRECT_ABORTED,
      TCP_DENIED,                 ///< Access was denied for this request
 +    TCP_DENIED_ABORTED,
-+    TCP_TUNNEL,
++    TCP_TUNNEL,                 ///< A binary tunnel was established for this transaction.
      UDP_HIT,                    ///< A valid copy of the requested object was in the cache
      UDP_HIT_OBJ,                ///< Same as UDP_HIT
      UDP_MISS,                   ///< The requested object was not in the cache
-@@ -89,7 +97,14 @@
+@@ -89,7 +109,14 @@
      ERR_CLIENT_ABORT,           ///< The client aborted its request
      ERR_NO_CLIENTS,             ///< There are no clients requesting this URL any more
      ERR_READ_ERROR,             ///< There was a read(2) error while retrieving this object
@@ -183,13 +238,14 @@
    /**
 --- a/src/squidlogparser.cpp
 +++ b/src/squidlogparser.cpp
-@@ -445,19 +445,26 @@
+@@ -445,26 +445,41 @@
            ERROR ("Unknown cache result");
            break;
          case SquidLogLine::TCP_DENIED:
 +        case SquidLogLine::TCP_DENIED_ABORTED:
          case SquidLogLine::UDP_DENIED:
 +        case SquidLogLine::TCP_REDIRECT:
++        case SquidLogLine::TCP_REDIRECT_ABORTED:
            break;
          case SquidLogLine::TCP_HIT:
 +        case SquidLogLine::TCP_HIT_ABORTED:
@@ -200,6 +256,8 @@
          case SquidLogLine::TCP_REFRESH_UNMODIFIED:
          case SquidLogLine::TCP_REF_FAIL_HIT:
          case SquidLogLine::TCP_IMS_HIT:
++        case SquidLogLine::TCP_IMS_HIT_ABORTED:
++        case SquidLogLine::TCP_INM_HIT:
 +        case SquidLogLine::TCP_ASYNC_HIT:
          case SquidLogLine::UDP_HIT:
            s_hit = sll.getSize ();
@@ -207,10 +265,14 @@
          case SquidLogLine::TCP_NEGATIVE_HIT:
          case SquidLogLine::TCP_MISS:
 +        case SquidLogLine::TCP_MISS_ABORTED:
++        case SquidLogLine::TCP_MISS_TIMEDOUT:
          case SquidLogLine::TCP_REFRESH_MISS:
          case SquidLogLine::TCP_REFRESH_MODIFIED:
++        case SquidLogLine::TCP_REFRESH_FAIL_ERR:
++        case SquidLogLine::TCP_REFRESH_FAIL_OLD:
          case SquidLogLine::TCP_CLIENT_REFRESH:
-@@ -465,6 +472,7 @@
+         case SquidLogLine::TCP_CLIENT_REFRESH_MISS:
++        case SquidLogLine::TCP_CLIENT_REFRESH_MISS_ABORTED:
          case SquidLogLine::TCP_IMS_MISS:
          case SquidLogLine::TCP_SWAPFAIL:
          case SquidLogLine::TCP_SWAPFAIL_MISS:
@@ -218,7 +280,7 @@
          case SquidLogLine::UDP_HIT_OBJ:
          case SquidLogLine::UDP_MISS:
          case SquidLogLine::UDP_INVALID:
-@@ -473,6 +481,8 @@
+@@ -473,6 +488,8 @@
          case SquidLogLine::ERR_NO_CLIENTS:
          case SquidLogLine::ERR_READ_ERROR:
          case SquidLogLine::ERR_CONNECT_FAIL:

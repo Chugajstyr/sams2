@@ -1,11 +1,13 @@
 /var/log/sams2/*.log {
-    daily
-    rotate 7
-    copytruncate
-    compress
-    notifempty
-    missingok
-    postrotate
-        test ! -e /var/run/sams2daemon.pid || test ! -x /usr/bin/sams2daemon || /usr/bin/sams2daemon restart
-    endscript
+	daily
+	rotate 7
+	copytruncate
+	compress
+	delaycompress
+	notifempty
+	missingok
+	sharedscripts
+	postrotate
+	    test ! -e /var/run/sams2daemon.pid || test ! -x /usr/bin/sams2daemon || invoke-rc.d sams2 restart >/dev/null 2>&1
+	endscript
 }

@@ -1,6 +1,6 @@
-sams2 (2.0.0-2~5.gbpe19bb6) UNRELEASED; urgency=medium
+sams2 (2.0.0-2) UNRELEASED; urgency=medium
 
-  ** SNAPSHOT build @e19bb6182f1955404b537ede0210018f35520c10 **
+  * Non-maintainer upload.
 
   [ blaze ]
   * Remove reference to sams.nixdev.net
@@ -24,8 +24,9 @@ sams2 (2.0.0-2~5.gbpe19bb6) UNRELEASED; urgency=medium
   * Исправлены ссылки на бинарник Squid3.x.
   * Добавлена ротация логов.
   * Переосмыслены Makefile.am и configure.in в соответствии с GNU Autoconf 2.69
+  * Фикс ротации логов SAMS2, очередной фикс спама в syslog "+++WARNING: Unknown cache result", мелкие правки
 
- -- Chugajstyr <notexist@gmail.com>  Thu, 30 Jun 2016 14:41:13 +0300
+ -- Chugajstyr <notexist@gmail.com>  Tue, 14 Mar 2017 03:00:35 +0200
 
 sams2 (2.0.0-1) stable; urgency=low
 
